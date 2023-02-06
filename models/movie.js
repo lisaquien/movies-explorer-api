@@ -60,7 +60,7 @@ const movieSchema = mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => rusRegex.test(v),
-      message: 'URL ссылки имеет некорректный формат',
+      message: 'Данное поле может быть заполнено только кириллицей',
     },
   },
   nameEN: {
@@ -68,7 +68,7 @@ const movieSchema = mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => engRegex.test(v),
-      message: 'URL ссылки имеет некорректный формат',
+      message: 'Данное поле может быть заполнено только буквами латинского алфавита',
     },
   },
 }, { versionKey: false });
