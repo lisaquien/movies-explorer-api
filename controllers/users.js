@@ -20,7 +20,6 @@ const createUser = (req, res, next) => {
       password: hash,
     }))
     .then((newUser) => res.status(CREATED_CODE).send({
-      _id: newUser._id,
       name: newUser.name,
       email: newUser.email,
     }))
@@ -56,7 +55,10 @@ const getMyInfo = (req, res, next) => {
 
   User.findById({ _id: userId })
     .orFail()
-    .then((myInfo) => res.status(OK_CODE).send(myInfo))
+    .then((myInfo) => res.status(OK_CODE).send({
+      name: myInfo.name,
+      email: myInfo.email,
+    }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные вводятся некорректно'));
@@ -82,7 +84,10 @@ const updateMyInfo = (req, res, next) => {
     },
   )
     .orFail()
-    .then((myUpdInfo) => res.status(OK_CODE).send(myUpdInfo))
+    .then((myUpdInfo) => res.status(OK_CODE).send({
+      name: myUpdInfo.name,
+      email: myUpdInfo.email,
+    }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные вводятся некорректно'));
