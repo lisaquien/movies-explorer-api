@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
 const helmet = require('helmet');
 const cors = require('cors');
 require('dotenv').config();
@@ -12,39 +12,22 @@ const wrongPath = require('./middlewares/wrongPath');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const limiter = require('./middlewares/limiter');
 
-const {
-  PORT = 3005,
-  MONGO_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb',
-} = process.env;
+const { PORT = 3005 } = process.env;
 
 const app = express();
 
 app.use(cors());
-
-app.use(limiter);
 
 app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(MONGO_URL);
+mongoose.connect(process.env.MONGO_URL);
 
 app.use(requestLogger);
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
+app.use(limiter);
 
 app.use(router);
 

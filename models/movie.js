@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
+
 const { urlRegex, rusRegex, engRegex } = require('../utils/regex');
+const {
+  WRONG_URL_FORMAT_RES_MSG,
+  CYRILLIC_ONLY_RES_MSG,
+  LATIN_ONLY_RES_MSG,
+} = require('../utils/constants');
 
 const movieSchema = mongoose.Schema({
   country: {
@@ -27,7 +33,7 @@ const movieSchema = mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => urlRegex.test(v),
-      message: 'URL ссылки имеет некорректный формат',
+      message: WRONG_URL_FORMAT_RES_MSG,
     },
   },
   trailerLink: {
@@ -35,7 +41,7 @@ const movieSchema = mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => urlRegex.test(v),
-      message: 'URL ссылки имеет некорректный формат',
+      message: WRONG_URL_FORMAT_RES_MSG,
     },
   },
   thumbnail: {
@@ -43,7 +49,7 @@ const movieSchema = mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => urlRegex.test(v),
-      message: 'URL ссылки имеет некорректный формат',
+      message: WRONG_URL_FORMAT_RES_MSG,
     },
   },
   owner: {
@@ -52,15 +58,15 @@ const movieSchema = mongoose.Schema({
     required: true,
   },
   movieId: {
-    type: String,
+    type: Number,
     required: true,
-  }, /* — id фильма, который содержится в ответе сервиса MoviesExplorer. Обязательное поле. */
+  },
   nameRU: {
     type: String,
     required: true,
     validate: {
       validator: (v) => rusRegex.test(v),
-      message: 'Данное поле может быть заполнено только кириллицей',
+      message: CYRILLIC_ONLY_RES_MSG,
     },
   },
   nameEN: {
@@ -68,7 +74,7 @@ const movieSchema = mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => engRegex.test(v),
-      message: 'Данное поле может быть заполнено только буквами латинского алфавита',
+      message: LATIN_ONLY_RES_MSG,
     },
   },
 }, { versionKey: false });

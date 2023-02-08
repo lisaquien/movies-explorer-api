@@ -6,7 +6,13 @@ const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 
-const { OK_CODE, CREATED_CODE } = require('../utils/constants');
+const {
+  OK_CODE,
+  CREATED_CODE,
+  INCORRECT_DATA_RES_MSG,
+  DUPLICATE_EMAIL_RES_MSG,
+  USER_NOT_FOUND_RES_MSG,
+} = require('../utils/constants');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -25,9 +31,9 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Данные вводятся некорректно'));
+        next(new BadRequestError(INCORRECT_DATA_RES_MSG));
       } else if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким e-mail уже существует, воспользуйтесь другим'));
+        next(new ConflictError(DUPLICATE_EMAIL_RES_MSG));
       } else {
         next(err);
       }
@@ -61,9 +67,9 @@ const getMyInfo = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Данные вводятся некорректно'));
+        next(new BadRequestError(INCORRECT_DATA_RES_MSG));
       } else if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        next(new NotFoundError(USER_NOT_FOUND_RES_MSG));
       } else {
         next(err);
       }
@@ -90,11 +96,11 @@ const updateMyInfo = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Данные вводятся некорректно'));
+        next(new BadRequestError(INCORRECT_DATA_RES_MSG));
       } else if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким e-mail уже существует, воспользуйтесь другим'));
+        next(new ConflictError(DUPLICATE_EMAIL_RES_MSG));
       } else if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        next(new NotFoundError(USER_NOT_FOUND_RES_MSG));
       } else {
         next(err);
       }

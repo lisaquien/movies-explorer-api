@@ -7,6 +7,10 @@ const ForbiddenError = require('../errors/ForbiddenError');
 const {
   OK_CODE,
   CREATED_CODE,
+  INCORRECT_DATA_RES_MSG,
+  MOVIE_NOT_FOUND_RES_MSG,
+  SAVED_MOVIES_NOT_FOUND_RES_MSG,
+  DIFF_OWNER_RES_MSG,
 } = require('../utils/constants');
 
 const getSavedMovies = (req, res, next) => {
@@ -17,7 +21,7 @@ const getSavedMovies = (req, res, next) => {
     .then((savedMovies) => res.status(OK_CODE).send(savedMovies))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('У пользователя нет сохраненных фильмов'));
+        next(new NotFoundError(SAVED_MOVIES_NOT_FOUND_RES_MSG));
       } else {
         next(err);
       }
@@ -31,7 +35,7 @@ const addNewMovie = (req, res, next) => {
     .then((addedMovie) => res.status(CREATED_CODE).send(addedMovie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Данные вводятся некорректно'));
+        next(new BadRequestError(INCORRECT_DATA_RES_MSG));
       } else {
         next(err);
       }
@@ -45,9 +49,9 @@ const unsaveMovie = (req, res, next) => {
   Movie.findById({ _id: id })
     .then((movie) => {
       if (!movie) {
-        next(new NotFoundError('Запрашиваемый фильм не найден'));
+        next(new NotFoundError(MOVIE_NOT_FOUND_RES_MSG));
       } else if (String(movie.owner) !== userId) {
-        next(new ForbiddenError('Невозможно удалить фильм, сохраненный другим пользователем'));
+        next(new ForbiddenError(DIFF_OWNER_RES_MSG));
       } else {
         Movie.findByIdAndRemove({ _id: id })
           .then((unsavedMovie) => res.status(200).send(unsavedMovie));
@@ -55,7 +59,7 @@ const unsaveMovie = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Данные вводятся некорректно'));
+        next(new BadRequestError(INCORRECT_DATA_RES_MSG));
       } else {
         next(err);
       }
